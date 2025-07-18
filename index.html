@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,9 +7,9 @@
     <!-- Chosen Palette: Slate Gray and Amber -->
     <!-- Application Structure Plan: The SPA is designed as a personal portfolio dashboard. The structure is thematic: a main header for identity, a navigation bar for quick access, and distinct sections for 'About Me' (Summary & Philosophy), 'Skills' (interactive chart), 'Career Journey' (timeline), 'Project Portfolio' (filterable grid & distribution chart), 'Achievements', and 'Education & Certifications'. This structure was chosen to allow non-linear exploration. A recruiter can immediately jump to the most relevant section (e.g., projects) without scrolling through the entire document. The interactivity (chart hovers, timeline clicks, project filters) encourages engagement and makes the information more digestible than a static list. -->
     <!-- Visualization & Content Choices: 
-        - Report Info: Key Skills -> Goal: Compare proficiency & breadth -> Viz/Presentation: Interactive Radar Chart (Chart.js) -> Interaction: Hover to see skill names -> Justification: A radar chart provides a compelling visual summary of a diverse skillset, showing areas of strength at a glance. It's more engaging than a simple list.
+        - Report Info: Key Skills -> Goal: Compare proficiency & breadth -> Viz/Presentation: Interactive Radar Chart (Chart.js) -> Interaction: Hover to see detailed skills in tooltip -> Justification: A radar chart provides a compelling visual summary of a diverse skillset. The enhanced tooltip provides immediate, granular detail of technologies within each category, crucial for recruiters assessing specific technical fit.
         - Report Info: Professional Experience -> Goal: Show career progression -> Viz/Presentation: Vertical Timeline (HTML/CSS) -> Interaction: Clean visual flow, no clicks needed to see core info -> Justification: A timeline visually represents career growth over time, which is more intuitive than parsing dates in a list.
-        - Report Info: Project Highlights -> Goal: Organize and showcase work -> Viz/Presentation: Filterable Grid (HTML/CSS/JS) & Donut Chart (Chart.js) -> Interaction: Click buttons to filter projects by category (AR, VR, MR, AI, 3D Config, Enterprise, Gaming), Donut chart shows distribution -> Justification: Filtering allows users to quickly find projects relevant to their interests, demonstrating expertise in specific domains. The donut chart provides a quick visual summary of project focus areas.
+        - Report Info: Project Highlights -> Goal: Organize and showcase work -> Viz/Presentation: Filterable Grid (HTML/CSS/JS) & Interactive Donut Chart (Chart.js) -> Interaction: Click buttons to filter projects by category (AR, VR, MR, AI, 3D Config, Enterprise, Gaming); Hover on donut segments to display detailed project list for that category; Click on project cards to display specific project details -> Justification: Filtering allows users to quickly find projects relevant to their interests. The interactive donut chart provides a quick visual summary of project focus areas and allows drill-down into specific projects. Clicking on project cards offers granular detail, providing immediate context and deeper insight for recruiters.
         - Report Info: Achievements, Education, Certifications -> Goal: Inform -> Viz/Presentation: Styled Text Blocks/Lists (HTML/CSS) -> Interaction: N/A -> Justification: Clear, legible text and lists are best for conveying detailed narrative information and structured data like education.
     -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
@@ -18,26 +17,18 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
-
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f8fafc;
-            /* slate-50 */
-            color: #334155;
-            /* slate-700 */
+            background-color: #f8fafc; /* slate-50 */
+            color: #334155; /* slate-700 */
         }
-
         .nav-link {
             transition: color 0.3s, border-bottom-color 0.3s;
         }
-
         .nav-link.active {
-            color: #d97706;
-            /* amber-600 */
-            border-bottom-color: #d97706;
-            /* amber-600 */
+            color: #d97706; /* amber-600 */
+            border-bottom-color: #d97706; /* amber-600 */
         }
-
         .timeline-item::before {
             content: '';
             position: absolute;
@@ -46,38 +37,34 @@
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            background-color: #f8fafc;
-            /* slate-50 */
-            border: 4px solid #d97706;
-            /* amber-600 */
+            background-color: #f8fafc; /* slate-50 */
+            border: 4px solid #d97706; /* amber-600 */
             z-index: 1;
         }
-
         .timeline-line {
             position: absolute;
             left: -21px;
             top: 0;
             bottom: 0;
             width: 2px;
-            background-color: #e2e8f0;
-            /* slate-200 */
+            background-color: #e2e8f0; /* slate-200 */
         }
-
         .project-card {
             transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer; /* Indicate clickable */
         }
-
         .project-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
         }
-
-        .filter-btn.active {
-            background-color: #d97706;
-            /* amber-600 */
-            color: white;
+        .filter-btn {
+            transition: background-color 0.3s, color 0.3s;
         }
-
+        .filter-btn.active {
+            background-color: #d97706; /* amber-600 */
+            color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
         .profile-pic-container {
             width: 120px;
             height: 120px;
@@ -90,56 +77,70 @@
             justify-content: center;
             align-items: center;
         }
-
         .profile-pic {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-
         .back-to-top-btn {
-            display: none;
-            /* Hidden by default */
+            display: none; /* Hidden by default */
             position: fixed;
             bottom: 1rem;
             right: 1rem;
-            background-color: #d97706;
-            /* amber-600 */
+            background-color: #d97706; /* amber-600 */
             color: white;
             padding: 0.75rem;
-            border-radius: 9999px;
-            /* fully rounded */
+            border-radius: 9999px; /* fully rounded */
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             cursor: pointer;
             z-index: 20;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.2s ease;
         }
-
         .back-to-top-btn:hover {
-            background-color: #b45309;
-            /* darker amber */
+            background-color: #b45309; /* darker amber */
+            transform: translateY(-2px);
+        }
+        h2 {
+            position: relative;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 2.25rem; /* text-4xl */
+            font-weight: 700; /* font-bold */
+            color: #1e293b; /* slate-900 */
+        }
+        h2::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background-color: #d97706; /* amber-600 */
+            border-radius: 2px;
+        }
+        h3 {
+            font-size: 1.5rem; /* text-2xl */
+            font-weight: 600; /* font-semibold */
+            color: #334155; /* slate-700 */
         }
     </style>
 </head>
-
 <body class="antialiased">
     <div class="container mx-auto p-4 sm:p-6 lg:p-8">
         <!-- Header -->
         <header class="text-center mb-12">
             <div class="profile-pic-container">
                 <!-- Replace this URL with your actual profile picture URL -->
-                <img id="profilePic" class="profile-pic" src="profile.png" alt="Rohan L Malodia Profile Picture">
+                <img id="profilePic" class="profile-pic" src="profile.png" alt="Rohan">
             </div>
             <h1 class="text-4xl sm:text-5xl font-bold text-slate-800">Rohan L Malodia</h1>
             <p class="text-lg sm:text-xl text-slate-600 mt-2">Senior XR Developer & Creative Director</p>
-            <div class="mt-4 flex justify-center items-center space-x-4 text-slate-500">
-                <span>Ahmedabad, Gujarat</span>
-                <span>|</span>
-                <a href="mailto:rohanmalodia@gmail.com" class="hover:text-amber-600">rohanmalodia@gmail.com</a>
-                <span>|</span>
-                <span>+91 8460718126</span>
-                <span>|</span>
-                <a href="https://www.linkedin.com/in/rohan-malodia-613278135/" target="_blank" class="hover:text-amber-600">LinkedIn</a>
+            <div class="mt-4 flex flex-wrap justify-center items-center gap-x-6 gap-y-2 text-slate-500 text-sm">
+                <span>Location: Ahmedabad, Gujarat</span> <span class="hidden sm:inline">|</span>
+                <span>Email: rohanmalodia@gmail.com</span> <span class="hidden sm:inline">|</span>
+                <span>Number: +91 8460718126</span> <span class="hidden sm:inline">|</span>
+                <span>LinkedIn: https://www.linkedin.com/in/rohan-malodia-613278135/</span>
             </div>
         </header>
 
@@ -158,7 +159,7 @@
         <!-- About Me Section -->
         <section id="about" class="mb-16 scroll-mt-24">
             <h2 class="text-3xl font-bold text-slate-800 mb-6 text-center">About Me</h2>
-            <div class="bg-white p-8 rounded-lg shadow-sm max-w-4xl mx-auto">
+             <div class="bg-white p-8 rounded-lg shadow-sm max-w-4xl mx-auto">
                 <p class="text-lg leading-relaxed text-slate-600 mb-6">
                     Highly accomplished Senior XR Developer and Creative Director with over 8 years of experience in immersive technologies (AR/VR/MR) and spatial computing. Proven expertise in developing and launching commercial-grade, multi-platform solutions for diverse sectors including real estate, enterprise, and education. Skilled in integrating AI/ML with spatial computing applications, optimizing performance, and leading cross-functional teams to deliver innovative and intuitive user experiences.
                 </p>
@@ -179,7 +180,7 @@
                             This chart provides a visual representation of my core technology strengths. My expertise spans across the full spectrum of XR development, from creating engaging Augmented Reality experiences to building immersive Virtual and Mixed Reality worlds. Hover over the points on the chart to see each skill category.
                         </p>
                         <ul id="skills-list" class="space-y-2 text-slate-600">
-                            <!-- JS will populate this -->
+                           <!-- JS will populate this -->
                         </ul>
                     </div>
                     <div class="chart-container relative h-80 sm:h-96 w-full max-w-md mx-auto">
@@ -204,13 +205,21 @@
         <section id="projects" class="mb-16 scroll-mt-24">
             <h2 class="text-3xl font-bold text-slate-800 mb-4 text-center">Project Portfolio</h2>
             <p class="text-center text-slate-600 max-w-3xl mx-auto mb-8">Here are highlights from my portfolio. I have designed and developed a wide range of solutions, from enterprise applications to engaging consumer experiences. Use the filters below to explore projects in specific areas of my expertise.</p>
-
-            <div class="bg-white p-6 rounded-lg shadow-sm mb-8">
-                <h3 class="text-xl font-semibold text-slate-700 mb-4 text-center">Project Distribution by Category</h3>
-                <div class="chart-container relative h-64 sm:h-80 w-full max-w-sm mx-auto">
-                    <canvas id="projectDistributionChart"></canvas>
+            
+            <div class="bg-white p-6 rounded-lg shadow-sm mb-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-xl font-semibold text-slate-700 mb-4 text-center">Project Distribution by Category</h3>
+                    <div class="chart-container relative h-64 sm:h-80 w-full max-w-sm mx-auto">
+                        <canvas id="projectDistributionChart"></canvas>
+                    </div>
+                    <p class="text-center text-slate-600 text-sm mt-4">This donut chart illustrates the breakdown of projects across different technology domains, showcasing the breadth of my experience.</p>
                 </div>
-                <p class="text-center text-slate-600 text-sm mt-4">This donut chart illustrates the breakdown of projects across different technology domains, showcasing the breadth of my experience.</p>
+                <div>
+                    <h3 class="text-xl font-semibold text-slate-700 mb-4 text-center">Details</h3>
+                    <div id="projectCategoryDetails" class="bg-slate-50 p-4 rounded-lg h-64 overflow-y-auto">
+                        <p class="text-slate-600 text-center">Select a category filter or hover over a segment in the chart to see details.</p>
+                    </div>
+                </div>
             </div>
 
             <div class="flex flex-wrap justify-center gap-2 mb-8">
@@ -300,7 +309,8 @@
                 'Bot Technologies': 'Microsoft Bot Framework'
             };
 
-            const experienceData = [{
+            const experienceData = [
+                {
                     role: 'Creative Director',
                     company: 'Matrixbrains',
                     period: 'Aug 2023 – Feb 2025',
@@ -338,176 +348,48 @@
 
             const projectsData = [
                 // Professional Projects
-                {
-                    title: 'Multiplayer VR Property Tour Platform',
-                    category: 'VR',
-                    description: 'Developed and launched an innovative multiplayer VR platform for real-time agent-client property tours. Engineered mapping solutions, implemented 3D space annotations, and created scalable architecture. Tech: Unity, Unreal Engine, 3ds Max, C#, VS Code, Custom Depth APIs.'
-                },
-                {
-                    title: 'JIO-Hamleys Christmas AR Hunt',
-                    category: 'AR',
-                    description: 'Developed location-based AR treasure hunt experience for JIO and Hamleys Christmas event. Created custom 3D assets and implemented precise GPS-based AR tracking. Tech: 8thwall, Unity, C#.'
-                },
-                {
-                    title: 'Toyota Car Visualizer',
-                    category: 'MR',
-                    description: 'Developed a mixed reality application allowing real-time car customization and visualization. Engineered a system for dynamically modifying car parts and colors. Tech: Unity, C#, 3D Modeling Tools.'
-                },
-                {
-                    title: 'Advanced Hiking Route Visualization System (Netherlands)',
-                    category: 'AR',
-                    description: 'Created a mixed reality application for visualizing advanced hiking routes on vertical rock faces. Achieved precise AR overlay stability. Tech: Vuforia, Unity, C#.'
-                },
-                {
-                    title: 'Multiplayer MR/VR Real Estate Platform (Quest 3)',
-                    category: 'MR',
-                    description: 'Engineered and deployed a real estate platform enabling simultaneous multi-user interactions. This enhanced virtual property walkthroughs and collaborative design. Tech: Unity, C#, Photon.'
-                },
-                {
-                    title: 'Mixed Reality Table Tennis (JIO Glass)',
-                    category: 'MR',
-                    description: 'Developed a mixed reality game for the JIO Glass platform. The game featured interactive 3D elements and realistic physics. Tech: Unity, C#, JIO Glass SDK.'
-                },
-                {
-                    title: 'R City Ride Experience',
-                    category: 'VR',
-                    description: 'Developed a virtual reality experience for the R City Ride. Provided an engaging interactive ride experience to users. Tech: Unity, C#, VR Platform SDKs.'
-                },
-
+                { title: 'Multiplayer VR Property Tour Platform', category: 'VR', description: 'Developed and launched an innovative multiplayer VR platform for real-time agent-client property tours. Engineered mapping solutions, implemented 3D space annotations, and created scalable architecture. Tech: Unity, Unreal Engine, 3ds Max, C#, VS Code, Custom Depth APIs.' },
+                { title: 'JIO-Hamleys Christmas AR Hunt', category: 'AR', description: 'Developed location-based AR treasure hunt experience for JIO and Hamleys Christmas event. Created custom 3D assets and implemented precise GPS-based AR tracking. Tech: 8thwall, Unity, C#.' },
+                { title: 'Toyota Car Visualizer', category: 'MR', description: 'Developed a mixed reality application allowing real-time car customization and visualization. Engineered a system for dynamically modifying car parts and colors. Tech: Unity, C#, 3D Modeling Tools.' },
+                { title: 'Advanced Hiking Route Visualization System (Netherlands)', category: 'AR', description: 'Created a mixed reality application for visualizing advanced hiking routes on vertical rock faces. Achieved precise AR overlay stability. Tech: Vuforia, Unity, C#.' },
+                { title: 'Multiplayer MR/VR Real Estate Platform (Quest 3)', category: 'MR', description: 'Engineered and deployed a real estate platform enabling simultaneous multi-user interactions. This enhanced virtual property walkthroughs and collaborative design. Tech: Unity, C#, Photon.' },
+                { title: 'Mixed Reality Table Tennis (JIO Glass)', category: 'MR', description: 'Developed a mixed reality game for the JIO Glass platform. The game featured interactive 3D elements and realistic physics. Tech: Unity, C#, JIO Glass SDK.' },
+                { title: 'R City Ride Experience', category: 'VR', description: 'Developed a virtual reality experience for the R City Ride. Provided an engaging interactive ride experience to users. Tech: Unity, C#, VR Platform SDKs.' },
+                
                 // Augmented Reality Applications
-                {
-                    title: 'AR Tiles Surface Scanner',
-                    category: 'AR',
-                    description: 'Created an AR application to scan and visualize tile patterns on surfaces. This facilitated interior design and visualization. Tech: Unity, C#, ARKit/ARCore/Vuforia/8thWall.'
-                },
-                {
-                    title: 'GolfAR Course Navigator',
-                    category: 'AR',
-                    description: 'Developed an AR application for golf course navigation. Provided real-time information and guidance to golfers. Tech: Unity, C#, ARKit/ARCore.'
-                },
-                {
-                    title: 'AR Play Cards',
-                    category: 'AR',
-                    description: 'Created an AR application linked to physical play cards. Brought characters and scenes to life through AR overlays. Tech: Unity, C#, Vuforia/Image-Tracking AR SDK.'
-                },
-                {
-                    title: 'Medical Tool Guide System',
-                    category: 'AR',
-                    description: 'Developed an AR application to guide users through the proper use of medical tools. Enhanced training and procedural understanding. Tech: Unity, C#, ARKit/ARCore/Vuforia.'
-                },
-                {
-                    title: 'Live Snooker Aid',
-                    category: 'AR',
-                    description: 'Created an AR aid for live snooker games. Provided real-time ball trajectory and strategic information. Tech: Unity, C#, ARKit/ARCore.'
-                },
+                { title: 'AR Tiles Surface Scanner', category: 'AR', description: 'Created an AR application to scan and visualize tile patterns on surfaces. This facilitated interior design and visualization. Tech: Unity, C#, ARKit/ARCore/Vuforia/8thWall.' },
+                { title: 'GolfAR Course Navigator', category: 'AR', description: 'Developed an AR application for golf course navigation. Provided real-time information and guidance to golfers. Tech: Unity, C#, ARKit/ARCore.' },
+                { title: 'AR Play Cards', category: 'AR', description: 'Created an AR application linked to physical play cards. Brought characters and scenes to life through AR overlays. Tech: Unity, C#, Vuforia/Image-Tracking AR SDK.' },
+                { title: 'Medical Tool Guide System', category: 'AR', description: 'Developed an AR application to guide users through the proper use of medical tools. Enhanced training and procedural understanding. Tech: Unity, C#, ARKit/ARCore/Vuforia.' },
+                { title: 'Live Snooker Aid', category: 'AR', description: 'Created an AR aid for live snooker games. Provided real-time ball trajectory and strategic information. Tech: Unity, C#, ARKit/ARCore.' },
 
                 // AI & Interactive Systems
-                {
-                    title: 'AI-Powered Virtual Assistant',
-                    category: 'AI',
-                    description: 'Developed an AI-powered virtual assistant with conversational capabilities. Integrated dynamic 3D avatar systems for natural interactions. Tech: Python, Unity, C#, Web APIs.'
-                },
-                {
-                    title: 'HR QnA Bot',
-                    category: 'AI',
-                    description: 'Created an AI-powered question and answer bot for HR-related queries. Provided instant and accurate responses to employee questions. Tech: Python, Web Frameworks.'
-                },
-                {
-                    title: 'Hybrid Chatbot System',
-                    category: 'AI',
-                    description: 'Developed a chatbot system combining rule-based and AI-driven conversational flows. Offered versatile customer support and information retrieval. Tech: Python, Backend Frameworks.'
-                },
-                {
-                    title: 'Dictionary Learning Assistant',
-                    category: 'AI',
-                    description: 'Created an interactive learning assistant focused on dictionary functions. Assisted users with word definitions and language acquisition. Tech: Unity/Web, C#/JavaScript/Python.'
-                },
-                {
-                    title: 'Interactive Animals VR Education',
-                    category: 'VR',
-                    description: 'Developed an interactive VR educational experience featuring animals. Enabled immersive learning about various animal species. Tech: Unity, C#, VR Platform SDKs.'
-                },
+                { title: 'AI-Powered Virtual Assistant', category: 'AI', description: 'Developed an AI-powered virtual assistant with conversational capabilities. Integrated dynamic 3D avatar systems for natural interactions. Tech: Python, Unity, C#, Web APIs.' },
+                { title: 'HR QnA Bot', category: 'AI', description: 'Created an AI-powered question and answer bot for HR-related queries. Provided instant and accurate responses to employee questions. Tech: Python, Web Frameworks.' },
+                { title: 'Hybrid Chatbot System', category: 'AI', description: 'Developed a chatbot system combining rule-based and AI-driven conversational flows. Offered versatile customer support and information retrieval. Tech: Python, Backend Frameworks.' },
+                { title: 'Dictionary Learning Assistant', category: 'AI', description: 'Created an interactive learning assistant focused on dictionary functions. Assisted users with word definitions and language acquisition. Tech: Unity/Web, C#/JavaScript/Python.' },
+                { title: 'Interactive Animals VR Education', category: 'VR', description: 'Developed an interactive VR educational experience featuring animals. Enabled immersive learning about various animal species. Tech: Unity, C#, VR Platform SDKs.' },
 
                 // 3D Configurators & Visualization
-                {
-                    title: 'Interactive Interior Design Platform',
-                    category: '3D Config',
-                    description: 'Developed a platform for real-time interior design customization. Included intuitive interaction systems for object manipulation and real-time lighting. Tech: Unity, C#, 3D Modeling Tools.'
-                },
-                {
-                    title: '3D Boat Configurator',
-                    category: '3D Config',
-                    description: 'Created a 3D configurator allowing users to customize boat models. Provided interactive visualization of design choices. Tech: Unity, C#, 3D Modeling Tools, PiXYZ.'
-                },
-                {
-                    title: 'Furniture Customization Tool',
-                    category: '3D Config',
-                    description: 'Developed a tool for customizing furniture in 3D. Enabled users to modify designs and visualize changes instantly. Tech: Unity, C#, 3D Modeling Tools.'
-                },
-                {
-                    title: 'Real Estate WebVR Platform',
-                    category: 'VR',
-                    description: 'Built a WebVR platform for real estate visualization. Allowed immersive virtual tours accessible via web browsers. Tech: Web-XR, JavaScript, A-frame/Three.js.'
-                },
-                {
-                    title: 'AR Floor Plan Visualizer',
-                    category: 'AR',
-                    description: 'Created an AR application for visualizing floor plans. Enabled users to see layouts in real-world scale. Tech: Unity, C#, ARKit/ARCore, CAD Integration.'
-                },
+                { title: 'Interactive Interior Design Platform', category: '3D Config', description: 'Developed a platform for real-time interior design customization. Included intuitive interaction systems for object manipulation and real-time lighting. Tech: Unity, C#, 3D Modeling Tools.' },
+                { title: '3D Boat Configurator', category: '3D Config', description: 'Created a 3D configurator allowing users to customize boat models. Provided interactive visualization of design choices. Tech: Unity, C#, 3D Modeling Tools, PiXYZ.' },
+                { title: 'Furniture Customization Tool', category: '3D Config', description: 'Developed a tool for customizing furniture in 3D. Enabled users to modify designs and visualize changes instantly. Tech: Unity, C#, 3D Modeling Tools.' },
+                { title: 'Real Estate WebVR Platform', category: 'VR', description: 'Built a WebVR platform for real estate visualization. Allowed immersive virtual tours accessible via web browsers. Tech: Web-XR, JavaScript, A-frame/Three.js.' },
+                { title: 'AR Floor Plan Visualizer', category: 'AR', description: 'Created an AR application for visualizing floor plans. Enabled users to see layouts in real-world scale. Tech: Unity, C#, ARKit/ARCore, CAD Integration.' },
 
                 // Enterprise Solutions
-                {
-                    title: 'Windows File Downloader (Azure Integration)',
-                    category: 'Enterprise',
-                    description: 'Developed a Windows application for file downloading with Azure integration. Streamlined data transfer and storage operations. Tech: C#, .NET, Azure SDKs/APIs.'
-                },
-                {
-                    title: 'Multi-platform Audit System',
-                    category: 'Enterprise',
-                    description: 'Created an audit system compatible across multiple platforms. Ensured consistent data collection and reporting. Tech: C#, .NET, Cross-platform Framework.'
-                },
-                {
-                    title: 'Windows 10 Migration App',
-                    category: 'Enterprise',
-                    description: 'Developed an application to assist with Windows 10 migration processes. Automated and simplified system upgrades. Tech: C#, .NET, Windows API.'
-                },
-                {
-                    title: 'Selenium Automation Framework',
-                    category: 'Enterprise',
-                    description: 'Created an automation framework using Selenium for testing. Improved efficiency and reliability of software testing. Tech: Python/C#/JavaScript, Selenium WebDriver.'
-                },
-                {
-                    title: 'Instagram AR Brand Filters',
-                    category: 'AR',
-                    description: 'Developed engaging AR filters for Instagram for brand promotion. Enhanced user engagement and brand visibility. Tech: Spark AR Studio, JavaScript.'
-                },
+                { title: 'Windows File Downloader (Azure Integration)', category: 'Enterprise', description: 'Developed a Windows application for file downloading with Azure integration. Streamlined data transfer and storage operations. Tech: C#, .NET, Azure SDKs/APIs.' },
+                { title: 'Multi-platform Audit System', category: 'Enterprise', description: 'Created an audit system compatible across multiple platforms. Ensured consistent data collection and reporting. Tech: C#, .NET, Cross-platform Framework.' },
+                { title: 'Windows 10 Migration App', category: 'Enterprise', description: 'Developed an application to assist with Windows 10 migration processes. Automated and simplified system upgrades. Tech: C#, .NET, Windows API.' },
+                { title: 'Selenium Automation Framework', category: 'Enterprise', description: 'Created an automation framework using Selenium for testing. Improved efficiency and reliability of software testing. Tech: Python/C#/JavaScript, Selenium WebDriver.' },
+                { title: 'Instagram AR Brand Filters', category: 'AR', description: 'Developed engaging AR filters for Instagram for brand promotion. Enhanced user engagement and brand visibility. Tech: Spark AR Studio, JavaScript.' },
 
                 // Gaming & Interactive Experiences
-                {
-                    title: 'Prison Escape Puzzle Game',
-                    category: 'Gaming',
-                    description: 'Developed a puzzle game based on a prison escape theme. Included various challenges and interactive elements. Tech: Unity, C#.'
-                },
-                {
-                    title: 'VR Horror Maze',
-                    category: 'Gaming',
-                    description: 'Created a virtual reality horror maze experience. Designed to provide an immersive and thrilling interactive game. Tech: Unity, C#, VR SDKs.'
-                },
-                {
-                    title: '3D Painting Application',
-                    category: 'Gaming',
-                    description: 'Developed a 3D painting application. Allowed users to create digital artwork in a three-dimensional space. Tech: Unity, C#, Graphics Programming/Shaders.'
-                },
-                {
-                    title: 'Flip & Match Social Game',
-                    category: 'Gaming',
-                    description: 'Created a social game with flip and match mechanics. Focused on engaging users in a casual interactive experience. Tech: Unity/Web-based Framework, C#/JavaScript.'
-                },
-                {
-                    title: 'Interactive AR Treasure Hunt',
-                    category: 'AR',
-                    description: 'Developed an interactive AR treasure hunt. Incorporated engaging elements for exploration and discovery. Tech: Unity, C#, ARKit/ARCore/8thWall.'
-                }
+                { title: 'Prison Escape Puzzle Game', category: 'Gaming', description: 'Developed a puzzle game based on a prison escape theme. Included various challenges and interactive elements. Tech: Unity, C#.' },
+                { title: 'VR Horror Maze', category: 'Gaming', description: 'Created a virtual reality horror maze experience. Designed to provide an immersive and thrilling interactive game. Tech: Unity, C#, VR SDKs.' },
+                { title: '3D Painting Application', category: 'Gaming', description: 'Developed a 3D painting application. Allowed users to create digital artwork in a three-dimensional space. Tech: Unity, C#, Graphics Programming/Shaders.' },
+                { title: 'Flip & Match Social Game', category: 'Gaming', description: 'Created a social game with flip and match mechanics. Focused on engaging users in a casual interactive experience. Tech: Unity/Web-based Framework, C#/JavaScript.' },
+                { title: 'Interactive AR Treasure Hunt', category: 'AR', description: 'Developed an interactive AR treasure hunt. Incorporated engaging elements for exploration and discovery. Tech: Unity, C#, ARKit/ARCore/8thWall.' }
             ];
 
             const achievementsData = [
@@ -517,11 +399,13 @@
                 'Multiple First Prize Awards, LAN Gaming Competitions'
             ];
 
-            const educationData = [{
-                degree: 'Bachelor of Engineering in Computer Engineering',
-                institution: 'Gujrat Technical University',
-                period: '2012 – 2016'
-            }];
+            const educationData = [
+                {
+                    degree: 'Bachelor of Engineering in Computer Engineering',
+                    institution: 'Gujrat Technical University',
+                    period: '2012 – 2016'
+                }
+            ];
 
             const certificationsData = [
                 'Programmer in C, Aptech Education Center',
@@ -546,19 +430,27 @@
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
-                                    return context.dataset.label + ': ' + context.raw.toString();
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.raw !== null) {
+                                        label += context.raw.toString();
+                                    }
+                                    return label;
+                                },
+                                afterBody: function(context) {
+                                    const categoryLabel = context[0].label;
+                                    const detailedSkills = fullSkills[categoryLabel];
+                                    return detailedSkills ? '\nSkills: ' + detailedSkills : '';
                                 }
                             }
                         }
                     },
                     scales: {
                         r: {
-                            angleLines: {
-                                color: '#e2e8f0'
-                            },
-                            grid: {
-                                color: '#e2e8f0'
-                            },
+                            angleLines: { color: '#e2e8f0' },
+                            grid: { color: '#e2e8f0' },
                             pointLabels: {
                                 font: {
                                     size: 12,
@@ -580,9 +472,9 @@
             // Render Skills List
             const skillsListContainer = document.getElementById('skills-list');
             Object.entries(fullSkills).forEach(([category, skills]) => {
-                const li = document.createElement('li');
-                li.innerHTML = `<span class="font-semibold text-slate-700">${category}:</span> ${skills}`;
-                skillsListContainer.appendChild(li);
+                 const li = document.createElement('li');
+                 li.innerHTML = `<span class="font-semibold text-slate-700">${category}:</span> ${skills}`;
+                 skillsListContainer.appendChild(li);
             });
 
 
@@ -607,7 +499,32 @@
 
             // Render Projects Grid
             const projectsGrid = document.getElementById('projects-grid');
-            const renderProjects = (filter = 'AR') => { // Default to AR
+            const projectCategoryDetails = document.getElementById('projectCategoryDetails'); // Get the details div
+            let activeFilterCategory = 'AR'; // Keep track of the currently active filter
+
+            const updateProjectDetailsBoxWithCategoryProjects = (category) => {
+                const projectsInCat = projectsData.filter(p => p.category === category);
+                let projectListHtml = projectsInCat.map(p => `<li>${p.title}</li>`).join('');
+                projectCategoryDetails.innerHTML = `
+                    <h4 class="text-lg font-semibold text-slate-800 mb-2">${category} (${projectsInCat.length} Projects)</h4>
+                    <ul class="list-disc list-inside text-slate-600 text-sm space-y-1">
+                        ${projectListHtml}
+                    </ul>
+                `;
+                projectCategoryDetails.dataset.displayMode = 'category'; // Set mode
+            };
+
+            const updateProjectDetailsBoxWithProjectDetails = (project) => {
+                projectCategoryDetails.innerHTML = `
+                    <h4 class="text-lg font-semibold text-slate-800 mb-2">${project.title}</h4>
+                    <p class="text-sm text-amber-600 mb-2">${project.category}</p>
+                    <p class="text-slate-600 text-sm">${project.description}</p>
+                `;
+                projectCategoryDetails.dataset.displayMode = 'project'; // Set mode
+            };
+
+            const renderProjects = (filter = 'AR') => {
+                activeFilterCategory = filter; // Update active filter
                 projectsGrid.innerHTML = '';
                 const filteredProjects = projectsData.filter(p => filter === 'all' || p.category === filter);
                 filteredProjects.forEach(project => {
@@ -618,10 +535,21 @@
                         <h3 class="text-lg font-bold text-slate-800 mt-1">${project.title}</h3>
                         <p class="text-slate-600 mt-2">${project.description}</p>
                     `;
+                    // Add click listener to each project card
+                    card.addEventListener('click', () => {
+                        updateProjectDetailsBoxWithProjectDetails(project);
+                    });
                     projectsGrid.appendChild(card);
                 });
+                // Update the details box based on the newly active filter, unless 'all' is selected
+                if (filter !== 'all') {
+                    updateProjectDetailsBoxWithCategoryProjects(filter);
+                } else {
+                    projectCategoryDetails.innerHTML = '<p class="text-slate-600 text-center">Select a category filter or hover over a segment in the chart to see details.</p>';
+                    projectCategoryDetails.dataset.displayMode = 'default';
+                }
             };
-
+            
             renderProjects('AR'); // Initial render with AR projects
 
             // Render Project Distribution Chart
@@ -637,7 +565,7 @@
             ]; // Amber shades
 
             const projectDistributionCtx = document.getElementById('projectDistributionChart').getContext('2d');
-            new Chart(projectDistributionCtx, {
+            const projectDistributionChart = new Chart(projectDistributionCtx, {
                 type: 'doughnut',
                 data: {
                     labels: projectDistributionLabels,
@@ -672,6 +600,30 @@
                                     }
                                     return label;
                                 }
+                            }
+                        }
+                    },
+                    onHover: (event, elements) => {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const category = projectDistributionLabels[index];
+                            const count = projectDistributionCounts[index];
+                            const projectsInCat = projectsData.filter(p => p.category === category);
+                            let projectListHtml = projectsInCat.map(p => `<li>${p.title}</li>`).join('');
+                            projectCategoryDetails.innerHTML = `
+                                <h4 class="text-lg font-semibold text-slate-800 mb-2">${category} (${count} Projects)</h4>
+                                <ul class="list-disc list-inside text-slate-600 text-sm space-y-1">
+                                    ${projectListHtml}
+                                </ul>
+                            `;
+                            projectCategoryDetails.dataset.displayMode = 'hover'; // Set mode
+                        } else {
+                            // Revert to active filter's projects or default message when hover ends
+                            if (activeFilterCategory !== 'all') {
+                                updateProjectDetailsBoxWithCategoryProjects(activeFilterCategory);
+                            } else {
+                                projectCategoryDetails.innerHTML = '<p class="text-slate-600 text-center">Select a category filter or hover over a segment in the chart to see details.</p>';
+                                projectCategoryDetails.dataset.displayMode = 'default';
                             }
                         }
                     }
@@ -716,16 +668,14 @@
                 navLinks.forEach(l => l.classList.remove('active'));
                 link.classList.add('active');
             }
-
+            
             navLinks.forEach(link => {
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
                     const targetId = link.getAttribute('href');
                     const targetSection = document.querySelector(targetId);
                     if (targetSection) {
-                        targetSection.scrollIntoView({
-                            behavior: 'smooth'
-                        });
+                        targetSection.scrollIntoView({ behavior: 'smooth' });
                         activateNavLink(link);
                     }
                 });
@@ -736,12 +686,10 @@
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         const link = document.querySelector(`.nav-link[href="#${entry.target.id}"]`);
-                        if (link) activateNavLink(link);
+                        if(link) activateNavLink(link);
                     }
                 });
-            }, {
-                rootMargin: '-50% 0px -50% 0px'
-            });
+            }, { rootMargin: '-50% 0px -50% 0px' });
 
             sections.forEach(section => observer.observe(section));
 
@@ -754,6 +702,13 @@
                     button.classList.add('active');
                     const filter = button.getAttribute('data-filter');
                     renderProjects(filter);
+                    // When a filter is clicked, update the details box to show category projects
+                    if (filter !== 'all') {
+                        updateProjectDetailsBoxWithCategoryProjects(filter);
+                    } else {
+                        projectCategoryDetails.innerHTML = '<p class="text-slate-600 text-center">Select a category filter or hover over a segment in the chart to see details.</p>';
+                        projectCategoryDetails.dataset.displayMode = 'default';
+                    }
                 });
             });
 
@@ -764,6 +719,9 @@
             if (initialFilterButton) {
                 initialFilterButton.classList.add('active');
             }
+            // Also update the details box for the initial filter
+            updateProjectDetailsBoxWithCategoryProjects(initialFilter);
+
 
             // Back to Top Button Logic
             const backToTopBtn = document.getElementById('backToTopBtn');
@@ -786,5 +744,4 @@
         });
     </script>
 </body>
-
 </html>
